@@ -4,9 +4,9 @@
 #include <WiFiClient.h>
 #include <SPI.h>
 #include <MFRC522.h>
-#include <LED_HIGH.h>
-#include <LED_LOW.h>
-#include "WIFI_SET.h"
+#include "LED_HIGH.h"//設定ESP8266 LED亮
+#include "LED_LOW.h"//設定ESP8266 LED熄滅
+#include "WIFI_SET.h"//wifi帳號密碼儲存位置
 
 constexpr uint8_t RST_PIN = D3;
 constexpr uint8_t SS_PIN = D4;
@@ -17,30 +17,17 @@ String tag;
 
 int count = 1;
 
-/*const char* ssid = "yydn";
-const char* password = "00001111";*/
-
 //URL路徑或IP位置
 String serverName = "http://192.168.0.112:3000/api/OuijaBoard/";
-//URL待更新
 
-// the following variables are unsigned longs because the time, measured in
-// milliseconds, will quickly become a bigger number than can be stored in an int.
 unsigned long lastTime = 0;
-// Timer set to 10 minutes (600000)
-//unsigned long timerDelay = 600000;
-// Set timer to 5 seconds (1000)
+// 如果要設定為10分鐘 timerDelay = 600000;
+// 如果要設定為5秒鐘 timerDelay = 1000;
 unsigned long timerDelay = 1000;
 
 void setup() {
   Serial.begin(115200); 
   WIFI();
-  /*WiFi.begin(ssid, password);
-  Serial.println("Connecting");
-  while(WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }*/
   Serial.println("");
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -49,8 +36,8 @@ void setup() {
   Serial.println(WiFi.localIP());
  
   Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
-  SPI.begin(); // Init SPI bus
-  rfid.PCD_Init(); // Init MFRC522
+  SPI.begin(); // 初始化SPI
+  rfid.PCD_Init(); // 初始化MFRC522
   pinMode(D8, OUTPUT);
 }
 
@@ -65,9 +52,9 @@ void loop() {
     tag = "";
     Serial.println(tag_temporary);
     rfid.PICC_HaltA();}
-  // Send an HTTP POST request depending on timerDelay
+  // 根據 timerDelay 對 HTTP POST 發送 request
   if ((millis() - lastTime) > timerDelay) {
-    //Check WiFi connection status
+    //檢查 WIFI 連接狀況
     if(WiFi.status()== WL_CONNECTED){
       WiFiClient client;
       HTTPClient http;
@@ -84,10 +71,10 @@ void loop() {
       serverName=serverName+ "/";
       Serial.println(serverName);
       
-      // Your Domain name with URL path or IP address with path
+      // URL路徑或IP位址
       http.begin(client, serverPath.c_str());
       
-      // Send HTTP GET request
+      // 發送 HTTP GET request
       int httpResponseCode = http.GET();
       
       if (httpResponseCode>0) {
@@ -100,7 +87,6 @@ void loop() {
         Serial.print("Error code: ");
         Serial.println(httpResponseCode);
       }
-      // Free resources
       http.end();
     }
     else {
