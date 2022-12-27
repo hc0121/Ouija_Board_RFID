@@ -7,6 +7,9 @@
 #include "LED_HIGH.h"//設定ESP8266 LED亮
 #include "LED_LOW.h"//設定ESP8266 LED熄滅
 #include "WIFI_SET.h"//wifi帳號密碼儲存位置
+#include "LED_HIGH.h"//設定ESP8266 LED亮
+#include "LED_LOW.h"//設定ESP8266 LED熄滅
+#include "WIFI_SET.h"//wifi帳號密碼儲存位置
 
 constexpr uint8_t RST_PIN = D3;
 constexpr uint8_t SS_PIN = D4;
@@ -31,6 +34,8 @@ const String serverName = "http://192.168.0.111:3000/api/OuijaBroad/";
 unsigned long lastTime = 0;
 // 如果要設定為10分鐘 timerDelay = 600000;
 // 如果要設定為5秒鐘 timerDelay = 1000;
+// 如果要設定為10分鐘 timerDelay = 600000;
+// 如果要設定為5秒鐘 timerDelay = 1000;
 unsigned long timerDelay = 1000;
 
 void setup() {
@@ -44,6 +49,8 @@ void setup() {
   Serial.println(WiFi.localIP());
  
   Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
+  SPI.begin(); // 初始化SPI
+  rfid.PCD_Init(); // 初始化MFRC522
   SPI.begin(); // 初始化SPI
   rfid.PCD_Init(); // 初始化MFRC522
   pinMode(D8, OUTPUT);
@@ -61,7 +68,9 @@ void loop() {
     Serial.println( tag_temporary);
     rfid.PICC_HaltA();}
   // 根據 timerDelay 對 HTTP POST 發送 request
+  // 根據 timerDelay 對 HTTP POST 發送 request
   if ((millis() - lastTime) > timerDelay) {
+    //檢查 WIFI 連接狀況
     //檢查 WIFI 連接狀況
     if(WiFi.status()== WL_CONNECTED){
       WiFiClient client;
@@ -92,6 +101,7 @@ void loop() {
       // URL路徑或IP位址
       http.begin(client, serverPath.c_str());
       
+      // 發送 HTTP GET request
       // 發送 HTTP GET request
       int httpResponseCode = http.GET();
       serverPath = "";
