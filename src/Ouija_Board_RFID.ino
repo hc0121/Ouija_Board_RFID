@@ -7,9 +7,6 @@
 #include "LED_HIGH.h"//設定ESP8266 LED亮
 #include "LED_LOW.h"//設定ESP8266 LED熄滅
 #include "WIFI_SET.h"//wifi帳號密碼儲存位置
-#include "LED_HIGH.h"//設定ESP8266 LED亮
-#include "LED_LOW.h"//設定ESP8266 LED熄滅
-#include "WIFI_SET.h"//wifi帳號密碼儲存位置
 
 constexpr uint8_t RST_PIN = D3;
 constexpr uint8_t SS_PIN = D4;
@@ -49,8 +46,6 @@ void setup() {
   Serial.println(WiFi.localIP());
  
   Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
-  SPI.begin(); // 初始化SPI
-  rfid.PCD_Init(); // 初始化MFRC522
   SPI.begin(); // 初始化SPI
   rfid.PCD_Init(); // 初始化MFRC522
   pinMode(D8, OUTPUT);
